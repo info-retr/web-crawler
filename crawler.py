@@ -1,6 +1,9 @@
 import logging
 import re
 from urllib.parse import urlparse
+from lxml import html as lh
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +42,13 @@ class Crawler:
 
         Suggested library: lxml
         """
-    
-
-
-
-
         outputLinks = []
+
+        soup = BeautifulSoup(url_data['content'], "lxml")
+        for link in soup.findAll('a'):
+            outputLinks.append(urljoin(url_data['url'], link.get('href')))
+
+
         return outputLinks
 
     def is_valid(self, url):
