@@ -24,24 +24,24 @@ def tokenize(str: str):
 # and p is the average number of tokens per line (separated by space chars)
 # Just a different way of saying input size. More lines, or tokens per line still means input size grows.
 # The innermost for loop growth directly correlates with tokens per line.
-# def tokenize(TextFilePath: str) -> list:
-#     try:
-#         file = open(TextFilePath, 'r')
-#         text: str = file.read().strip()
-#         lines: list = text.splitlines()
-#         tokens: list = []
-#         for line in lines:
-#             for token in line.split():
-#                 splitNonAlphaNum: list = list(filter(None, re.split(r'[^0-9a-zA-Z]+', token)))
-#                 if splitNonAlphaNum:
-#                     for word in splitNonAlphaNum:
-#                         tokens.append(word)
-#         file.close()
-#     except FileNotFoundError:
-#         print('Debug: file doens\'t exist')
-#         sys.exit()
-#     else:
-#         return tokens
+def tokenize_file(TextFilePath: str) -> list:
+    try:
+        file = open(TextFilePath, 'r')
+        text: str = file.read().strip()
+        lines: list = text.splitlines()
+        tokens: list = []
+        for line in lines:
+            for token in line.split():
+                splitNonAlphaNum: list = list(filter(None, re.split(r'[^0-9a-zA-Z]+', token)))
+                if splitNonAlphaNum:
+                    for word in splitNonAlphaNum:
+                        tokens.append(word)
+        file.close()
+    except FileNotFoundError:
+        print('Debug: file doens\'t exist')
+        sys.exit()
+    else:
+        return tokens
 
 
 # checklist:

@@ -5,10 +5,13 @@ from lxml import html as lh
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
+import string
+
 # https://edstem.org/us/courses/33063/discussion/2500737
-from PartA import tokenize, compute_word_frequencies
+from PartA import tokenize, compute_word_frequencies, tokenize_file
 
 logger = logging.getLogger(__name__)
+
 
 class Crawler:
     """
@@ -24,6 +27,16 @@ class Crawler:
         self.downloaded_urls: dict = {}
         self.longest_worded_page: dict = {}
         self.top_fifty_frequency_words: dict = {}
+        self.stop_words = tokenize_file('stop_words.txt')
+        self.stop_words.extend(list(string.ascii_lowercase))
+        self.stop_words = sorted(set(self.stop_words))
+        # print(self.stop_words)
+
+    def write_analytics(self):
+        file = open('analytics.txt', 'w')
+        file.write("analytics")
+        file.close()
+        print('analytics written')
 
     def start_crawling(self):
         """
@@ -40,8 +53,9 @@ class Crawler:
             for next_link in self.extract_next_links(url_data):
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
-                        self.frontier.add_url(next_link)
+                        self.frontier.add_url(next_link)    
                         # print('len(frontier=)', len(self.frontier))
+        self.write_analytics()
 
     def extract_next_links(self, url_data):
         """
@@ -53,21 +67,13 @@ class Crawler:
 
         Suggested library: lxml
         """
-
-        if url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404:
-            return list()
-
-        # idk about needing to filter pdfs/other files out
-        # url: str = url_data['url']
-        # if url.endsWith('pdf'):
-        #     return list()
-
         outputLinks = []
-        soup = BeautifulSoup(url_data['content'], "lxml")
-        for link in soup.findAll('a'):
-            outputLink = urljoin(url_data['url'], link.get('href'))
-            outputLinks.append(outputLink)
-
+        # do i need all of these checks or just 404
+        if not (url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404):
+            soup = BeautifulSoup(url_data['content'], "lxml")
+            for link in soup.findAll('a'):
+                outputLink = urljoin(url_data['url'], link.get('href'))
+                outputLinks.append(outputLink)
         return outputLinks
 
     def is_valid(self, url):
@@ -91,13 +97,8 @@ class Crawler:
             print("TypeError for ", parsed)
             return False
 
-# traps and rules associated with them
-# -calendar: 
-# run thru x amt of calendar time/dates then deem it trap/invalid
-# and/or run thru y amt of calendar pages (same goes w/ other potential trap page types)
-# -dynamic urls:
-
-
-# other source links that could be used:
+# sources:
+# https://datagy.io/python-list-alphabet/
+# https://www.w3schools.com/python/gloss_python_join_lists.asp
 # https://www.ranks.nl/stopwords
 # https://fleiner.com/bots/
