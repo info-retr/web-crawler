@@ -5,6 +5,9 @@ from lxml import html as lh
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
+# https://edstem.org/us/courses/33063/discussion/2500737
+from PartA import tokenize, compute_word_frequencies
+
 logger = logging.getLogger(__name__)
 
 class Crawler:
@@ -16,6 +19,11 @@ class Crawler:
     def __init__(self, frontier, corpus):
         self.frontier = frontier
         self.corpus = corpus
+        self.visited_subdomains: dict = {}
+        self.most_valid_out_links: dict = {}
+        self.downloaded_urls: dict = {}
+        self.longest_worded_page: dict = {}
+        self.top_fifty_frequency_words: dict = {}
 
     def start_crawling(self):
         """
@@ -24,13 +32,16 @@ class Crawler:
         """
         while self.frontier.has_next_url():
             url = self.frontier.get_next_url()
-            logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
+            # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
+            
+            # /
             url_data = self.corpus.fetch_url(url)
 
             for next_link in self.extract_next_links(url_data):
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
+                        # print('len(frontier=)', len(self.frontier))
 
     def extract_next_links(self, url_data):
         """
@@ -42,12 +53,20 @@ class Crawler:
 
         Suggested library: lxml
         """
-        outputLinks = []
 
+        if url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404:
+            return list()
+
+        # idk about needing to filter pdfs/other files out
+        # url: str = url_data['url']
+        # if url.endsWith('pdf'):
+        #     return list()
+
+        outputLinks = []
         soup = BeautifulSoup(url_data['content'], "lxml")
         for link in soup.findAll('a'):
-            outputLinks.append(urljoin(url_data['url'], link.get('href')))
-
+            outputLink = urljoin(url_data['url'], link.get('href'))
+            outputLinks.append(outputLink)
 
         return outputLinks
 
@@ -72,3 +91,13 @@ class Crawler:
             print("TypeError for ", parsed)
             return False
 
+# traps and rules associated with them
+# -calendar: 
+# run thru x amt of calendar time/dates then deem it trap/invalid
+# and/or run thru y amt of calendar pages (same goes w/ other potential trap page types)
+# -dynamic urls:
+
+
+# other source links that could be used:
+# https://www.ranks.nl/stopwords
+# https://fleiner.com/bots/
