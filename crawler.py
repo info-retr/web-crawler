@@ -150,6 +150,14 @@ class Crawler:
                 else:
                     outputLink = urljoin(url_data['url'], link.get('href'))
                 outputLinks.append(outputLink)
+
+        for url in outputLinks:
+            if self.is_valid(url):
+                if url_data['url'] in self.page_with_the_most_valid_outlinks:
+                    self.page_with_the_most_valid_outlinks[url_data['url']] = 1
+                else:
+                    self.page_with_the_most_valid_outlinks[url_data['url']] += 1
+        
         return outputLinks
 
 
