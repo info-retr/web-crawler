@@ -32,6 +32,7 @@ class Crawler:
         self.stop_words.extend(list(string.ascii_lowercase))
         self.stop_words = sorted(set(self.stop_words))
         self.url_count = 0
+        self.linkList = []
         # print(self.stop_words)
 
     def write_analytics(self):
@@ -47,20 +48,20 @@ class Crawler:
         This method starts the crawling process which is scraping urls from the next available link in frontier and adding
         the scraped links to the frontier
         """
+        file = open('crawled_urls.txt', 'w')
         rabbit_hole_count = 0
-        # file = open('crawled_urls.txt', 'w')  uncomment to write all urls to text file
         while self.frontier.has_next_url():
             url = self.frontier.get_next_url()
             # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
             url_data = self.corpus.fetch_url(url)
-
             for next_link in self.extract_next_links(url_data):
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
-                        self.url_count += 1
-                        # file.write("{}\n".format(next_link))  uncomment to write all urls to text file
-        # file.close()  uncomment to write all urls to text file
+                        if next_link not in self.linkList:
+                            self.linkList.append(next_link)
+                            file.write("{}\n".format(next_link))
+        file.close()        
         self.write_analytics()
 
     def extract_next_links(self, url_data):
@@ -78,7 +79,7 @@ class Crawler:
         if not (url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404):
             soup = BeautifulSoup(url_data['content'], "lxml")
             for link in soup.findAll('a'):
-                outputLink = urljoin(url_data['url'], link.get('href'))
+                outputLink = urljoin(url_data['final_url'], link.get('href'))
                 outputLinks.append(outputLink)
         return outputLinks
 
