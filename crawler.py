@@ -12,6 +12,7 @@ from PartA import tokenize, compute_word_frequencies, tokenize_file
 
 logger = logging.getLogger(__name__)
 
+# RABBIT_HOLE_LIMIT = 200
 URL_LEN_LIMIT = 200
 
 class Crawler:
@@ -52,9 +53,13 @@ class Crawler:
 
             for next_link in self.extract_next_links(url_data):
                 if self.is_valid(next_link):
+                    print(url)
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
-                        # print(list(self.frontier.urls_set)[-1])
+                        rabbit_hole_count += 1
+                        # if rabbit_hole_count > RABBIT_HOLE_LIMIT:
+                        #     del frontier[-RABBIT_HOLE_LIMIT+1]
+                        #     rabbit_hole_count = 0
             
         self.write_analytics()
 
@@ -87,11 +92,10 @@ class Crawler:
         if parsed.scheme not in set(["http", "https"]):
             return False
         try:
-            # ============start trap detection===========
-            if len(url) > URL_LEN_LIMIT or '#' in url: 
-                return False
 
-            # ============end trap detection=============
+            # tokenize url to get subdomain, domain, query, etfc
+
+
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
                                     + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
