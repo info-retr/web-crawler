@@ -108,7 +108,7 @@ class Crawler:
                                     + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
                                     + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
                                     + "|thmx|mso|arff|rtf|jar|csv" \
-                                    + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf|txt)$", parsed.path.lower())
+                                    + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf|txt|bam|bib|bw|odc)$", parsed.path.lower())
 
         except TypeError:
             # print("TypeError for ", parsed)
