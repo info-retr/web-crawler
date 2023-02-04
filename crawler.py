@@ -103,7 +103,7 @@ class Crawler:
         file.write("see valid URLs in attached crawled_urls.txt")
 
         file.write("4: longest page and number of words") # longest_worded_page
-        sortedPage = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1])}
+        sortedPage = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1], reverse = True)}
         urlLongestWords = list(sortedPage.keys())[0]
         file.write(urlLongestWords, sortedPage[urlLongestWords])
 
