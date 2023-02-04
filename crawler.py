@@ -171,6 +171,7 @@ class Crawler:
             if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
                 return False
 
+<<<<<<< HEAD
             # dynamic url's that have quite a few query arguments
             if '?' in url or '=' in url or '&' in url:
                 if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
@@ -178,6 +179,11 @@ class Crawler:
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
                 return len(query_args) < 7
+=======
+            # login pages
+            if url.endswith('do=login&sectok=') or url.endswith('login') or url.endswith('login.php')  or url.endswith('login=1'):
+                return False
+>>>>>>> 3072e2e6150b9ea32617d3116d963f40362ff1e6
 
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
