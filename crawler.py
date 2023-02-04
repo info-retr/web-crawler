@@ -25,6 +25,7 @@ class Crawler:
         self.corpus = corpus
         self.init_analytics_data()
         self.init_stop_words()
+        self.init_debug()
 
     def init_analytics_data(self):
         # 
@@ -42,33 +43,36 @@ class Crawler:
         self.url_count = 0
         # print(self.stop_words)
 
+    def init_debug(self):
+        self.linkList = []
+
+
     def write_analytics(self):
         file = open('analytics.txt', 'w')
         file.write("analytics")
         file.close()
         print('analytics written')
-
  
-
     def start_crawling(self):
         """
         This method starts the crawling process which is scraping urls from the next available link in frontier and adding
         the scraped links to the frontier
         """
+        file = open('crawled_urls.txt', 'w')
         rabbit_hole_count = 0
-        # file = open('crawled_urls.txt', 'w')  uncomment to write all urls to text file
         while self.frontier.has_next_url():
             url = self.frontier.get_next_url()
             # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
             url_data = self.corpus.fetch_url(url)
-
             for next_link in self.extract_next_links(url_data):
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
-                        self.url_count += 1
-                        # file.write("{}\n".format(next_link))  uncomment to write all urls to text file
-        # file.close()  uncomment to write all urls to text file
+                        if next_link not in self.linkList:
+                            self.linkList.append(next_link)
+                            self.url_count += 1
+                            file.write("{}\n".format(next_link))
+        file.close()        
         self.write_analytics()
 
     def extract_next_links(self, url_data):
@@ -101,9 +105,20 @@ class Crawler:
             return False
         try:
             # ============start trap detection===========
+            
+            # simplest checks
             if len(url) > URL_LEN_LIMIT or '#' in url: 
                 # record trap in 
                 return False
+
+            # repeating patterns
+            pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
+            match = pattern.search(parsed.path)
+            if match:
+                return False
+
+            # 
+
 
             # ============end trap detection=============
             return ".ics.uci.edu" in parsed.hostname \
@@ -117,8 +132,4 @@ class Crawler:
             # print("TypeError for ", parsed)
             return False
 
-# sources:
-# https://datagy.io/python-list-alphabet/
-# https://www.w3schools.com/python/gloss_python_join_lists.asp
-# https://www.ranks.nl/stopwords
-# https://fleiner.com/bots/
+
