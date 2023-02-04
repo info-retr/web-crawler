@@ -83,18 +83,22 @@ class Crawler:
     def write_analytics(self):
         file = open('analytics.txt', 'w')
         file.write("analytics")
-        file.write("1: visited_subdomains")
+
+        file.write("1: subdomains visited and number of urls processed") # visited_subdomains
         # file.write()
-        file.write("2: page_with_the_most_valid_outlinks:")
+        
+        file.write("2: pages with most valid outlinks") # page_with_the_most_valid_outlinks
         # file.write()
-        file.write("3: downloaded_urls")
+
+        file.write("3: trapped URLs") # downloaded_urls
         # file.write()
-        file.write("3: trap_urls")
+
+        file.write("4: longest page and number of words") # longest_worded_page
         # file.write()
-        file.write("4: longest_worded_page")
+
+        file.write("5: top 50 most common words across all pages") # top_fifty_frequency_words
         # file.write()
-        file.write("5: top_fifty_frequency_words")
-        # file.write()
+
         file.close()
         print('analytics written')
 
