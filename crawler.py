@@ -94,18 +94,16 @@ class Crawler:
             file.write(k, v)
         
         file.write("2: page with most valid outlinks") # page_with_the_most_valid_outlinks
-        sortedOutlinks = {k: v for k, v in sorted(self.page_with_the_most_valid_outlinks.items(), key=lambda item: item[1], reverse=True)}
-        urlMostOutlinks = list(sortedOutlinks.keys())[0]
-        file.write(urlMostOutlinks, sortedOutlinks[urlMostOutlinks])
+        max_value = max(self.page_with_the_most_valid_outlinks, key=self.page_with_the_most_valid_outlinks.get()) #get key with largest value
+        file.write(max_value, self.page_with_the_most_valid_outlinks[max_value])
 
         file.write("3: trapped URLs") # downloaded_urls
         file.write("see trapped URLs in attached trapped_urls.txt")
         file.write("see valid URLs in attached crawled_urls.txt")
 
         file.write("4: longest page and number of words") # longest_worded_page
-        sortedPage = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1], reverse = True)}
-        urlLongestWords = list(sortedPage.keys())[0]
-        file.write(urlLongestWords, sortedPage[urlLongestWords])
+        max_value2 = max(self.longest_worded_page, key=self.longest_worded_page.get()) #get key with largest value
+        file.write(max_value2, self.page_with_the_most_valid_outlinks[max_value2])
 
         file.write("5: top 50 most common words across all pages") # top_fifty_frequency_words
         sortedFrequencies = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1], reverse=True)}
