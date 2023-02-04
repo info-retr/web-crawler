@@ -92,7 +92,7 @@ class Crawler:
         file.write("3: trap_urls")
         # file.write()
         file.write("4: longest_worded_page")
-        # file.write()
+        # file.write(dict(sorted(self.longest_worded_page.items(), key=lambda item: item[1], reverse=True)))
         file.write("5: top_fifty_frequency_words")
         # file.write()
         file.close()
@@ -167,23 +167,17 @@ class Crawler:
                 return False
 
             # various directory and query arguments filtered for multiple reasons, such as:
-            # pound sign indicating elements/positions all on the same page, =login not being accessible thru crawling, action=implying absent user interactivity, etc
+            # pound sign indicating elements/positions all on the same page
             if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
                 return False
 
-<<<<<<< HEAD
-            # dynamic url's that have quite a few query arguments
+            # dynamic url's that have quite a few query arguments, =login not being accessible thru crawling, action=implying absent user interactivity, etc
             if '?' in url or '=' in url or '&' in url:
                 if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
                     return False
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
-                return len(query_args) < 7
-=======
-            # login pages
-            if url.endswith('do=login&sectok=') or url.endswith('login') or url.endswith('login.php')  or url.endswith('login=1'):
-                return False
->>>>>>> 3072e2e6150b9ea32617d3116d963f40362ff1e6
+                return len(query_args) < 6
 
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
@@ -191,7 +185,7 @@ class Crawler:
                                     + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
                                     + "|thmx|mso|arff|rtf|jar|csv" \
                                     + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf" \
-                                    + "|bam|lif|ply|mexw)$", parsed.path.lower())
+                                    + "|bam|lif|ply|mexw|bw)$", parsed.path.lower())
             # ============end trap detection=============
 
         except TypeError:

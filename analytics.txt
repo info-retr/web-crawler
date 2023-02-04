@@ -1,1 +1,1 @@
-analytics1: visited_subdomains
+analytics1: visited_subdomains2: page_with_the_most_valid_outlinks:3: downloaded_urls3: trap_urls4: longest_worded_page5: top_fifty_frequency_words
