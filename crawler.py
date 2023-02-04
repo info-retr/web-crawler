@@ -182,7 +182,8 @@ class Crawler:
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
                 return len(query_args) < 7
-
+                
+            self.get_subdomain(url)
             self.findLongestPage(url) 
             self.mostCommonWords(url)
 
