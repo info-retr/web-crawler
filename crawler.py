@@ -81,17 +81,26 @@ class Crawler:
                 self.top_fifty_frequency_words[d] += 1 
 
     def write_analytics(self):
+        trapFile = open('trapped_urls.txt', 'w')
+        for t in self.trap_urls:
+            trapFile.write(t)
+        trapFile.close()
+
         file = open('analytics.txt', 'w')
         file.write("analytics")
 
         file.write("1: subdomains visited and number of urls processed") # visited_subdomains
-        # file.write()
+        for k, v in self.visited_subdomains.items():
+            file.write(k, v)
         
-        file.write("2: pages with most valid outlinks") # page_with_the_most_valid_outlinks
-        # file.write()
+        file.write("2: page with most valid outlinks") # page_with_the_most_valid_outlinks
+        sortedOutlinks = {k: v for k, v in sorted(self.page_with_the_most_valid_outlinks.items(), key=lambda item: item[1], reverse=True)}
+        urlMostOutlinks = list(sortedOutlinks.keys())[0]
+        file.write(urlMostOutlinks, sortedOutlinks[urlMostOutlinks])
 
         file.write("3: trapped URLs") # downloaded_urls
-        # file.write()
+        file.write("see trapped URLs in attached trapped_urls.txt")
+        file.write("see valid URLs in attached crawled_urls.txt")
 
         file.write("4: longest page and number of words") # longest_worded_page
         sortedPage = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1])}
@@ -169,33 +178,39 @@ class Crawler:
         """
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
+            self.trap_urls.append(url)
             return False
         try:
             # ============start trap detection===========
 
             # urls that are too long
             if ( len(url) > 120 ):
+                self.trap_urls.append(url)
                 return False
 
             # repeating patterns
             pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
             match = pattern.search(parsed.path)
             if match:
+                self.trap_urls.append(url)
                 return False
 
             # various directory and query arguments filtered for multiple reasons, such as:
             # pound sign indicating elements/positions all on the same page
             if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
+                self.trap_urls.append(url)
                 return False
 
             # dynamic url's that have quite a few query arguments, =login not being accessible thru crawling, action=implying absent user interactivity, etc
             if '?' in url or '=' in url or '&' in url:
                 if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
+                    self.trap_urls.append(url)
                     return False
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
                 return len(query_args) < 6
             
+            self.get_subdomain(url)
             self.findLongestPage(url)
             self.mostCommonWords(url)
 
@@ -210,6 +225,7 @@ class Crawler:
 
         except TypeError:
             # print("TypeError for ", parsed)
+            self.trap_urls.append(url)
             return False
 
 # ================
