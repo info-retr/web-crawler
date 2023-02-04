@@ -87,7 +87,8 @@ class Crawler:
         """
         outputLinks = []
         # do i need all of these checks or just 404
-        if not (url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404):
+        # 400 http codes are client errors; 500 codes are server errors
+        if not (url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] in range(400,600)):
             soup = BeautifulSoup(url_data['content'], "lxml")
             for link in soup.findAll('a'):
                 outputLink = urljoin(url_data['url'], link.get('href'))
@@ -118,7 +119,7 @@ class Crawler:
                 return False
 
             # 
-
+            
 
             # ============end trap detection=============
             return ".ics.uci.edu" in parsed.hostname \
