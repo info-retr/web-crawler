@@ -158,22 +158,26 @@ class Crawler:
 
             # urls that are too long
             if ( len(url) > 120 ):
+                self.trap_urls.append(url)
                 return False
 
             # repeating patterns
             pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
             match = pattern.search(parsed.path)
             if match:
+                self.trap_urls.append(url)
                 return False
 
             # various directory and query arguments filtered for multiple reasons, such as:
             # pound sign indicating elements/positions all on the same page, =login not being accessible thru crawling, action=implying absent user interactivity, etc
             if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
+                self.trap_urls.append(url)
                 return False
 
             # dynamic url's that have quite a few query arguments
             if '?' in url or '=' in url or '&' in url:
                 if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
+                    self.trap_urls.append(url)
                     return False
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
