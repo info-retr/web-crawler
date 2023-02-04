@@ -171,7 +171,6 @@ class Crawler:
             if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
                 return False
 
-<<<<<<< HEAD
             # dynamic url's that have quite a few query arguments
             if '?' in url or '=' in url or '&' in url:
                 if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
@@ -179,11 +178,6 @@ class Crawler:
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
                 return len(query_args) < 7
-=======
-            # login pages
-            if url.endswith('do=login&sectok=') or url.endswith('login') or url.endswith('login.php')  or url.endswith('login=1'):
-                return False
->>>>>>> 3072e2e6150b9ea32617d3116d963f40362ff1e6
 
             self.findLongestPage(url) 
             self.mostCommonWords(url)
@@ -201,54 +195,3 @@ class Crawler:
             # print("TypeError for ", parsed)
             return False
 
-<<<<<<< HEAD
-
-    def findLongestPage(self, url):
-        soup = BeautifulSoup(url, 'lxml')
-        page_text = (''.join(s.findAll(text=True)) for s in soup.findAll('p'))
-        word_count_p = len(tokenize(page_text))
-        page_text_div = (''.join(s.findAll(text=True)) for s in soup.findAll('div'))
-        word_count_d = len(tokenize(page_text_div))
-        self.longest_worded_page[url] = word_count_p + word_count_d
-
-
-    def mostCommonWords(self, url):
-        soup = BeautifulSoup(url, 'lxml')
-        stop_words = []
-        with open("stop_words.txt") as f:
-            stop_words = f.read().splitlines()
-        page_text = (''.join(s.findAll(text=True)) for s in soup.findAll('p'))
-        page_tokens = tokenize(page_text)
-        for p in page_tokens:
-            if  p not in stop_words and p not in self.top_fifty_frequency_words:
-                self.top_fifty_frequency_words[p] = 1
-            elif p not in stop_words:
-                self.top_fifty_frequency_words[p] += 1
-        page_text_div = (''.join(s.findAll(text=True)) for s in soup.findAll('div'))
-        div_tokens = tokenize(page_text_div)
-        for d in div_tokens:
-            if  d not in stop_words and d not in self.top_fifty_frequency_words:
-                self.top_fifty_frequency_words[d] = 1
-            elif d not in stop_words:
-                self.top_fifty_frequency_words[d] += 1
-        
-=======
-# ================
-# sources:
-# https://edstem.org/us/courses/33063/discussion/2500737
-# https://youtu.be/klJZw2aMEIQ?t=605
-# https://docs.python.org/3/library/urllib.parse.html
-# https://stackoverflow.com/questions/70717072/how-to-compare-urls-in-python-not-traditional-way
-# https://stackoverflow.com/questions/24396406/find-most-common-words-from-a-website-in-python-3
-# https://stackoverflow.com/questions/6925825/get-subdomain-from-url-using-python
-# https://stackoverflow.com/questions/10113090/best-way-to-parse-a-url-query-string
-# https://developers.google.com/search/blog/2008/09/dynamic-urls-vs-static-urls
-# https://datagy.io/python-list-alphabet/
-# https://www.w3schools.com/python/gloss_python_join_lists.asp
-# https://www.ranks.nl/stopwords
-# https://fleiner.com/bots/
-# https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages
-# https://www.geeksforgeeks.org/http-headers-content-type/
-# https://pypi.org/project/tldextract/
->>>>>>> 9716ce0af980e349db691416d8c570c7c4654cfe
