@@ -31,8 +31,8 @@ class Crawler:
         self.page_with_the_most_valid_outlinks: dict = {}
         self.downloaded_urls: list = []
         self.trap_urls: list = []
-        self.longest_worded_page: dict = {}
-        self.top_fifty_frequency_words: dict = {}
+        self.longest_worded_page: dict = {} # to get url with most words, sort by value and return url, word count
+        self.top_fifty_frequency_words: dict = {} # to get top 50 words, sort by values descending order and return top 50 words, word count
 
     def init_stop_words(self):
         self.stop_words = tokenize_file('stop_words.txt')
@@ -138,6 +138,9 @@ class Crawler:
             if url.endswith('do=login&sectok=') or url.endswith('login') or url.endswith('login.php')  or url.endswith('login=1'):
                 return False
 
+            self.findLongestPage(url) 
+            self.mostCommonWords(url)
+
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
                                     + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
@@ -152,3 +155,32 @@ class Crawler:
             return False
 
 
+    def findLongestPage(self, url):
+        soup = BeautifulSoup(url, 'lxml')
+        page_text = (''.join(s.findAll(text=True)) for s in soup.findAll('p'))
+        word_count_p = len(tokenize(page_text))
+        page_text_div = (''.join(s.findAll(text=True)) for s in soup.findAll('div'))
+        word_count_d = len(tokenize(page_text_div))
+        self.longest_worded_page[url] = word_count_p + word_count_d
+
+
+    def mostCommonWords(self, url):
+        soup = BeautifulSoup(url, 'lxml')
+        stop_words = []
+        with open("stop_words.txt") as f:
+            stop_words = f.read().splitlines()
+        page_text = (''.join(s.findAll(text=True)) for s in soup.findAll('p'))
+        page_tokens = tokenize(page_text)
+        for p in page_tokens:
+            if  p not in stop_words and p not in self.top_fifty_frequency_words:
+                self.top_fifty_frequency_words[p] = 1
+            elif p not in stop_words:
+                self.top_fifty_frequency_words[p] += 1
+        page_text_div = (''.join(s.findAll(text=True)) for s in soup.findAll('div'))
+        div_tokens = tokenize(page_text_div)
+        for d in div_tokens:
+            if  d not in stop_words and d not in self.top_fifty_frequency_words:
+                self.top_fifty_frequency_words[d] = 1
+            elif d not in stop_words:
+                self.top_fifty_frequency_words[d] += 1
+        
