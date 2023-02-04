@@ -23,13 +23,21 @@ class Crawler:
     def __init__(self, frontier, corpus):
         self.frontier = frontier
         self.corpus = corpus
+        self.init_analytics_data()
+        self.init_stop_words()
+
+    def init_analytics_data(self):
+        # 
         self.visited_subdomains: dict = {}
-        self.most_valid_out_links: dict = {}
-        self.downloaded_urls: dict = {}
+        self.page_with_the_most_valid_outlinks: dict = {}
+        self.downloaded_urls: list = []
+        self.trap_urls: list = []
         self.longest_worded_page: dict = {}
         self.top_fifty_frequency_words: dict = {}
+
+    def init_stop_words(self):
         self.stop_words = tokenize_file('stop_words.txt')
-        self.stop_words.extend(list(string.ascii_lowercase))
+        self.stop_words.extend(list(string.ascii_letters))
         self.stop_words = sorted(set(self.stop_words))
         # print(self.stop_words)
 
@@ -88,6 +96,7 @@ class Crawler:
         try:
             # ============start trap detection===========
             if len(url) > URL_LEN_LIMIT or '#' in url: 
+                # record trap in 
                 return False
 
             # ============end trap detection=============
