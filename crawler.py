@@ -92,18 +92,17 @@ class Crawler:
 
         file.write("3: trapped URLs") # downloaded_urls
         # file.write()
-<<<<<<< HEAD
 
         file.write("4: longest page and number of words") # longest_worded_page
-        # file.write()
+        sortedPage = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1])}
+        urlLongestWords = list(sortedPage.keys())[0]
+        file.write(urlLongestWords, sortedPage[urlLongestWords])
 
         file.write("5: top 50 most common words across all pages") # top_fifty_frequency_words
-=======
-        file.write("4: longest_worded_page")
-        # file.write(dict(sorted(self.longest_worded_page.items(), key=lambda item: item[1], reverse=True)))
-        file.write("5: top_fifty_frequency_words")
->>>>>>> be0c509d92ea2efa3f190ead88c46a1ce29eefde
-        # file.write()
+        sortedFrequencies = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1], reverse=True)}
+        top50Keys = list(sortedFrequencies.keys())[:50]
+        for k in top50Keys:
+            file.write(k, sortedFrequencies[k])
 
         file.close()
         print('analytics written')
@@ -188,6 +187,9 @@ class Crawler:
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
                 return len(query_args) < 6
+            
+            self.findLongestPage(url)
+            self.mostCommonWords(url)
 
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
