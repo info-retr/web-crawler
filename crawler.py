@@ -41,6 +41,13 @@ class Crawler:
         self.stop_words.extend(list(string.ascii_letters))
         self.stop_words = sorted(set(self.stop_words))
 
+    def get_subdomain(self, url):
+        sub = tldextract.extract(url)
+        if sub.subdomain in self.url_count_per_subdomain:
+            self.url_count_per_subdomain[sub.subdomain] += 1
+        else:
+            self.url_count_per_subdomain[sub.subdomain] = 1
+
     def write_analytics(self):
         print("all this function should do is output data that already exists. the 2 methods take care of "
               "on their own with start_crawling as a sort of glue/backbone")
@@ -115,12 +122,14 @@ class Crawler:
                     outputLink = urljoin(url_data['final_url'], link.get('href'))
                 else:
                     outputLink = urljoin(url_data['url'], link.get('href'))
-                if self.is_valid(outputLink):
-                    self.valid_urls.add(outputLink)
-                else:
-                    self.trap_urls.add(outputLink)
-                outputLinks.add(outputLink)
+                    if self.is_valid(outputLink):
+                        self.valid_urls.add(outputLink)
 
+                    else:
+                        self.trap_urls.add(outputLink)
+                        
+                self.get_subdomain(outputLink)
+                outputLinks.add(outputLink)
         # analyti-cizing 1,2,4,5
         # if self.url_data_buffer == {}:
         #     self.url_data_buffer = url_data
