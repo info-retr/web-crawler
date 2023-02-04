@@ -30,8 +30,8 @@ class Crawler:
         self.page_with_the_most_valid_outlinks: dict = {}
         self.downloaded_urls: list = []
         self.trap_urls: list = []
-        self.longest_worded_page: dict = {} # to get url with most words, sort by value and return url, word count
-        self.top_fifty_frequency_words: dict = {} # to get top 50 words, sort by values descending order and return top 50 words, word count
+        self.longest_worded_page: dict = {}
+        self.top_fifty_frequency_words: dict = {}
 
     def init_stop_words(self):
         self.stop_words = tokenize_file('stop_words.txt')
@@ -92,11 +92,17 @@ class Crawler:
 
         file.write("3: trapped URLs") # downloaded_urls
         # file.write()
+<<<<<<< HEAD
 
         file.write("4: longest page and number of words") # longest_worded_page
         # file.write()
 
         file.write("5: top 50 most common words across all pages") # top_fifty_frequency_words
+=======
+        file.write("4: longest_worded_page")
+        # file.write(dict(sorted(self.longest_worded_page.items(), key=lambda item: item[1], reverse=True)))
+        file.write("5: top_fifty_frequency_words")
+>>>>>>> be0c509d92ea2efa3f190ead88c46a1ce29eefde
         # file.write()
 
         file.close()
@@ -162,34 +168,26 @@ class Crawler:
 
             # urls that are too long
             if ( len(url) > 120 ):
-                self.trap_urls.append(url)
                 return False
 
             # repeating patterns
             pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
             match = pattern.search(parsed.path)
             if match:
-                self.trap_urls.append(url)
                 return False
 
             # various directory and query arguments filtered for multiple reasons, such as:
-            # pound sign indicating elements/positions all on the same page, =login not being accessible thru crawling, action=implying absent user interactivity, etc
+            # pound sign indicating elements/positions all on the same page
             if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
-                self.trap_urls.append(url)
                 return False
 
-            # dynamic url's that have quite a few query arguments
+            # dynamic url's that have quite a few query arguments, =login not being accessible thru crawling, action=implying absent user interactivity, etc
             if '?' in url or '=' in url or '&' in url:
                 if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
-                    self.trap_urls.append(url)
                     return False
                 query_args: dict = parse_qs(urlparse(url).query)
                 # print(query_args)
-                return len(query_args) < 7
-                
-            self.get_subdomain(url)
-            self.findLongestPage(url) 
-            self.mostCommonWords(url)
+                return len(query_args) < 6
 
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
@@ -197,10 +195,28 @@ class Crawler:
                                     + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
                                     + "|thmx|mso|arff|rtf|jar|csv" \
                                     + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf" \
-                                    + "|bam|lif|ply|mexw)$", parsed.path.lower())
+                                    + "|bam|lif|ply|mexw|bw)$", parsed.path.lower())
             # ============end trap detection=============
 
         except TypeError:
             # print("TypeError for ", parsed)
             return False
 
+# ================
+# sources:
+# https://edstem.org/us/courses/33063/discussion/2500737
+# https://youtu.be/klJZw2aMEIQ?t=605
+# https://docs.python.org/3/library/urllib.parse.html
+# https://stackoverflow.com/questions/70717072/how-to-compare-urls-in-python-not-traditional-way
+# https://stackoverflow.com/questions/24396406/find-most-common-words-from-a-website-in-python-3
+# https://stackoverflow.com/questions/6925825/get-subdomain-from-url-using-python
+# https://stackoverflow.com/questions/10113090/best-way-to-parse-a-url-query-string
+# https://developers.google.com/search/blog/2008/09/dynamic-urls-vs-static-urls
+# https://datagy.io/python-list-alphabet/
+# https://www.w3schools.com/python/gloss_python_join_lists.asp
+# https://www.ranks.nl/stopwords
+# https://fleiner.com/bots/
+# https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages
+# https://www.geeksforgeeks.org/http-headers-content-type/
+# https://pypi.org/project/tldextract/
