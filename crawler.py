@@ -60,6 +60,7 @@ class Crawler:
                         self.frontier.add_url(next_link)
                         if next_link not in self.linkList:
                             self.linkList.append(next_link)
+                            self.url_count += 1
                             file.write("{}\n".format(next_link))
         file.close()        
         self.write_analytics()
