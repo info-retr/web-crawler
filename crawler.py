@@ -85,7 +85,6 @@ class Crawler:
         """
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
-            # print('invalid url that doesnt have http/s:', parsed.scheme)
             return False
         try:
             # ============start trap detection===========
