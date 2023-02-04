@@ -23,26 +23,36 @@ class Crawler:
     def __init__(self, frontier, corpus):
         self.frontier = frontier
         self.corpus = corpus
+        self.init_analytics_data()
+        self.init_stop_words()
+        self.init_debug()
+
+    def init_analytics_data(self):
+        # 
         self.visited_subdomains: dict = {}
-        self.most_valid_out_links: dict = {}
-        self.downloaded_urls: dict = {}
+        self.page_with_the_most_valid_outlinks: dict = {}
+        self.downloaded_urls: list = []
+        self.trap_urls: list = []
         self.longest_worded_page: dict = {}
         self.top_fifty_frequency_words: dict = {}
+
+    def init_stop_words(self):
         self.stop_words = tokenize_file('stop_words.txt')
-        self.stop_words.extend(list(string.ascii_lowercase))
+        self.stop_words.extend(list(string.ascii_letters))
         self.stop_words = sorted(set(self.stop_words))
         self.url_count = 0
-        self.linkList = []
         # print(self.stop_words)
+
+    def init_debug(self):
+        self.linkList = []
+
 
     def write_analytics(self):
         file = open('analytics.txt', 'w')
         file.write("analytics")
         file.close()
         print('analytics written')
-
  
-
     def start_crawling(self):
         """
         This method starts the crawling process which is scraping urls from the next available link in frontier and adding
@@ -80,7 +90,7 @@ class Crawler:
         if not (url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404):
             soup = BeautifulSoup(url_data['content'], "lxml")
             for link in soup.findAll('a'):
-                outputLink = urljoin(url_data['final_url'], link.get('href'))
+                outputLink = urljoin(url_data['url'], link.get('href'))
                 outputLinks.append(outputLink)
         return outputLinks
 
@@ -95,12 +105,20 @@ class Crawler:
             return False
         try:
             # ============start trap detection===========
+            
+            # simplest checks
             if len(url) > URL_LEN_LIMIT or '#' in url: 
+                # record trap in 
                 return False
-            pattern = re.compile(r"(.*)(/{2,})(.*)") #repeating patterns
+
+            # repeating patterns
+            pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
             match = pattern.search(parsed.path)
             if match:
                 return False
+
+            # 
+
 
             # ============end trap detection=============
             return ".ics.uci.edu" in parsed.hostname \
@@ -114,12 +132,4 @@ class Crawler:
             # print("TypeError for ", parsed)
             return False
 
-# sources:
-# https://datagy.io/python-list-alphabet/
-# https://www.w3schools.com/python/gloss_python_join_lists.asp
-# https://www.ranks.nl/stopwords
-# https://fleiner.com/bots/
-# https://www.cis.uni-muenchen.de/~yeong/Kurse/ss09/WebDataMining/kap8_rev.pdf
-# https://docs.python.org/3/library/re.html
 
-## testing push rn
