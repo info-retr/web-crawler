@@ -122,4 +122,4 @@ class Crawler:
 # https://www.cis.uni-muenchen.de/~yeong/Kurse/ss09/WebDataMining/kap8_rev.pdf
 # https://docs.python.org/3/library/re.html
 
-## testing push
+## testing push rn
