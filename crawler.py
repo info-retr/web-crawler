@@ -97,8 +97,6 @@ class Crawler:
             # ============start trap detection===========
             if len(url) > URL_LEN_LIMIT or '#' in url: 
                 return False
-            if re.match(".*\.(jpg|jpeg|png|gif|bmp|svg|pdf|mp4|mp3|ogg|webm|mov|avi)$", parsed.path.lower()): 
-                return False
             pattern = re.compile(r"(.*)(/{2,})(.*)") #repeating patterns
             match = pattern.search(parsed.path)
             if match:
@@ -124,3 +122,4 @@ class Crawler:
 # https://www.cis.uni-muenchen.de/~yeong/Kurse/ss09/WebDataMining/kap8_rev.pdf
 # https://docs.python.org/3/library/re.html
 
+## testing push
