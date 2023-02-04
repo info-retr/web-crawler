@@ -83,13 +83,25 @@ class Crawler:
 
         Suggested library: lxml
         """
+        # outputLinks = []
+        # if not ( (url_data['content'] is None) or (url_data['size'] == 0) or (url_data['http_code'] in range(400,600)) or (url_data['content_type'] == 'application/pdf') or (url_data['content_type'] == 'application/zip') ):
+        #     # print(url_data['url'], ':', url_data['http_code'])
+        #     soup = BeautifulSoup(url_data['content'], "lxml")
+        #     for link in soup.findAll('a'):
+        #         outputLink = urljoin(url_data['url'], link.get('href'))
+        #         outputLinks.append(outputLink)
+        # return outputLinks
         outputLinks = []
         if not ( (url_data['content'] is None) or (url_data['size'] == 0) or (url_data['http_code'] in range(400,600)) or (url_data['content_type'] == 'application/pdf') or (url_data['content_type'] == 'application/zip') ):
             soup = BeautifulSoup(url_data['content'], "lxml")
             for link in soup.findAll('a'):
-                outputLink = urljoin(url_data['url'], link.get('href'))
+                if (url_data['is_redirected']):
+                    outputLink = urljoin(url_data['final_url'], link.get('href'))
+                else:
+                    outputLink = urljoin(url_data['url'], link.get('href'))
                 outputLinks.append(outputLink)
         return outputLinks
+
 
     def is_valid(self, url):
         """
@@ -104,7 +116,7 @@ class Crawler:
             # ============start trap detection===========
             
             # simplest checks
-            if ((len(url) > 100) or ('#' in url) or ('/pix/' in url) or ('/cite/' in url) ): 
+            if ((len(url) > 100) or ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ): 
                 # record trap in 
                 return False
 
@@ -128,7 +140,7 @@ class Crawler:
                                     + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
                                     + "|thmx|mso|arff|rtf|jar|csv" \
                                     + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf" \
-                                    + "|bam|lif|ply|)$", parsed.path.lower())
+                                    + "|bam|lif|ply|mexw)$", parsed.path.lower())
             # ============end trap detection=============
 
         except TypeError:
