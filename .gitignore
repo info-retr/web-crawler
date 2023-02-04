@@ -3,3 +3,4 @@
 *.pyc
 *.pkl
 __pycache__/crawler.cpython-310.pyc
+*.pyc
