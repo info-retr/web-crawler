@@ -48,7 +48,7 @@ class Crawler:
         the scraped links to the frontier
         """
         rabbit_hole_count = 0
-        file = open('crawled_urls.txt', 'w')
+        # file = open('crawled_urls.txt', 'w')  uncomment to write all urls to text file
         while self.frontier.has_next_url():
             url = self.frontier.get_next_url()
             # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
@@ -59,8 +59,8 @@ class Crawler:
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
                         self.url_count += 1
-                        file.write("{}\n".format(next_link))
-        file.close()
+                        # file.write("{}\n".format(next_link))  uncomment to write all urls to text file
+        # file.close()  uncomment to write all urls to text file
         self.write_analytics()
 
     def extract_next_links(self, url_data):
