@@ -134,6 +134,10 @@ class Crawler:
             if url.endswith('action=login') or url.endswith('precision=second'):
                 return False
 
+            # login pages
+            if url.endswith('do=login&sectok=') or url.endswith('login') or url.endswith('login.php')  or url.endswith('login=1'):
+                return False
+
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
                                     + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
