@@ -111,8 +111,8 @@ class Crawler:
                 # record trap in 
                 return False
 
-            # repeating patterns
-            pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
+            # check repeating patterns
+            pattern = re.compile(r"(.*)\/((\w)*(\d)*)(.*){3,100}") 
             match = pattern.search(parsed.path)
             if match:
                 return False
