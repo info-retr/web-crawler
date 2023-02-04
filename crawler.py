@@ -97,6 +97,10 @@ class Crawler:
             # ============start trap detection===========
             if len(url) > URL_LEN_LIMIT or '#' in url: 
                 return False
+            pattern = re.compile(r"(.*)(/{2,})(.*)") #repeating patterns
+            match = pattern.search(parsed.path)
+            if match:
+                return False
 
             # ============end trap detection=============
             return ".ics.uci.edu" in parsed.hostname \
@@ -115,3 +119,7 @@ class Crawler:
 # https://www.w3schools.com/python/gloss_python_join_lists.asp
 # https://www.ranks.nl/stopwords
 # https://fleiner.com/bots/
+# https://www.cis.uni-muenchen.de/~yeong/Kurse/ss09/WebDataMining/kap8_rev.pdf
+# https://docs.python.org/3/library/re.html
+
+## testing push rn
