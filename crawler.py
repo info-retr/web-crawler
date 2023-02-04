@@ -103,7 +103,7 @@ class Crawler:
 
         file.write("4: longest page and number of words") # longest_worded_page
         max_value2 = max(self.longest_worded_page, key=self.longest_worded_page.get()) #get key with largest value
-        file.write(max_value2, self.page_with_the_most_valid_outlinks[max_value2])
+        file.write(max_value2, self.longest_worded_page[max_value2])
 
         file.write("5: top 50 most common words across all pages") # top_fifty_frequency_words
         sortedFrequencies = {k: v for k, v in sorted(self.top_fifty_frequency_words.items(), key=lambda item: item[1], reverse=True)}
