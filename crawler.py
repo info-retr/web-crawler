@@ -39,6 +39,7 @@ class Crawler:
         self.stop_words = tokenize_file('stop_words.txt')
         self.stop_words.extend(list(string.ascii_letters))
         self.stop_words = sorted(set(self.stop_words))
+        self.url_count = 0
         # print(self.stop_words)
 
     def write_analytics(self):
@@ -47,12 +48,15 @@ class Crawler:
         file.close()
         print('analytics written')
 
+ 
+
     def start_crawling(self):
         """
         This method starts the crawling process which is scraping urls from the next available link in frontier and adding
         the scraped links to the frontier
         """
         rabbit_hole_count = 0
+        # file = open('crawled_urls.txt', 'w')  uncomment to write all urls to text file
         while self.frontier.has_next_url():
             url = self.frontier.get_next_url()
             # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
@@ -62,7 +66,9 @@ class Crawler:
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
-            
+                        self.url_count += 1
+                        # file.write("{}\n".format(next_link))  uncomment to write all urls to text file
+        # file.close()  uncomment to write all urls to text file
         self.write_analytics()
 
     def extract_next_links(self, url_data):
