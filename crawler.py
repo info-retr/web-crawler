@@ -1,6 +1,6 @@
 import logging
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from lxml import html as lh
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
@@ -11,8 +11,6 @@ import string
 from PartA import tokenize, compute_word_frequencies, tokenize_file
 
 logger = logging.getLogger(__name__)
-
-URL_LEN_LIMIT = 200
 
 class Crawler:
     """
@@ -86,8 +84,7 @@ class Crawler:
         Suggested library: lxml
         """
         outputLinks = []
-        # do i need all of these checks or just 404
-        if not (url_data['content'] is None or url_data['size'] == 0 or url_data['http_code'] == 404):
+        if not ( (url_data['content'] is None) or (url_data['size'] == 0) or (url_data['http_code'] in range(400,600)) ):
             soup = BeautifulSoup(url_data['content'], "lxml")
             for link in soup.findAll('a'):
                 outputLink = urljoin(url_data['url'], link.get('href'))
@@ -107,7 +104,7 @@ class Crawler:
             # ============start trap detection===========
             
             # simplest checks
-            if len(url) > URL_LEN_LIMIT or '#' in url: 
+            if ((len(url) > 100) or ('#' in url)): 
                 # record trap in 
                 return False
 
@@ -117,8 +114,13 @@ class Crawler:
             if match:
                 return False
 
-            # 
-
+            # # 
+            # if '?' in url or '=' in url or '&' in url:
+            #     # url_parse = urlparse(url)
+            #     query_args: dict = parse_qs(urlparse(url).query)
+            #     return False
+            if url.endswith('action=login') or url.endswith('precision=second'):
+                return False
 
             # ============end trap detection=============
             return ".ics.uci.edu" in parsed.hostname \
@@ -126,7 +128,8 @@ class Crawler:
                                     + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
                                     + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
                                     + "|thmx|mso|arff|rtf|jar|csv" \
-                                    + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf)$", parsed.path.lower())
+                                    + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf" \
+                                    + "|bam|lif|ply)$", parsed.path.lower())
 
         except TypeError:
             # print("TypeError for ", parsed)
