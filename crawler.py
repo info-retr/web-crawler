@@ -12,6 +12,8 @@ from PartA import tokenize, compute_word_frequencies, tokenize_file
 
 logger = logging.getLogger(__name__)
 
+# RABBIT_HOLE_LIMIT = 200
+URL_LEN_LIMIT = 200
 
 class Crawler:
     """
@@ -43,18 +45,22 @@ class Crawler:
         This method starts the crawling process which is scraping urls from the next available link in frontier and adding
         the scraped links to the frontier
         """
+        rabbit_hole_count = 0
         while self.frontier.has_next_url():
             url = self.frontier.get_next_url()
             # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
-            
-            # /
             url_data = self.corpus.fetch_url(url)
 
             for next_link in self.extract_next_links(url_data):
                 if self.is_valid(next_link):
+                    print(url)
                     if self.corpus.get_file_name(next_link) is not None:
-                        self.frontier.add_url(next_link)    
-                        # print('len(frontier=)', len(self.frontier))
+                        self.frontier.add_url(next_link)
+                        rabbit_hole_count += 1
+                        # if rabbit_hole_count > RABBIT_HOLE_LIMIT:
+                        #     del frontier[-RABBIT_HOLE_LIMIT+1]
+                        #     rabbit_hole_count = 0
+            
         self.write_analytics()
 
     def extract_next_links(self, url_data):
@@ -84,8 +90,13 @@ class Crawler:
         """
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
+            # print('invalid url that doesnt have http/s:', parsed.scheme)
             return False
         try:
+
+            # tokenize url to get subdomain, domain, query, etfc
+
+
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
                                     + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
@@ -94,7 +105,7 @@ class Crawler:
                                     + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf)$", parsed.path.lower())
 
         except TypeError:
-            print("TypeError for ", parsed)
+            # print("TypeError for ", parsed)
             return False
 
 # sources:
