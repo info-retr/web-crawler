@@ -4,10 +4,9 @@ from urllib.parse import urlparse, parse_qs
 from lxml import html as lh
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-
+import tldextract
 import string
 
-# https://edstem.org/us/courses/33063/discussion/2500737
 from PartA import tokenize, compute_word_frequencies, tokenize_file
 
 logger = logging.getLogger(__name__)
@@ -44,12 +43,62 @@ class Crawler:
     def init_debug(self):
         self.linkList = []
 
+    # ===============
+
+    def get_subdomain(self, url):
+        sub = tldextract.extract(url)
+        if sub.subdomain in self.visited_subdomains:
+            self.visited_subdomains[sub.subdomain] += 1
+        else:
+            self.visited_subdomains[sub.subdomain] = 1
+
+    def findLongestPage(self, url):
+        soup = BeautifulSoup(url, 'lxml')
+        page_text = (''.join(s.findAll(text=True)) for s in soup.findAll('p'))
+        word_count_p = len(tokenize(page_text))
+        page_text_div = (''.join(s.findAll(text=True)) for s in soup.findAll('div'))
+        word_count_d = len(tokenize(page_text_div))
+        self.longest_worded_page[url] = word_count_p + word_count_d
+
+    def mostCommonWords(self, url):
+        soup = BeautifulSoup(url, 'lxml')
+        stop_words = []
+        with open("stop_words.txt") as f:
+            stop_words = f.read().splitlines()
+        page_text = (''.join(s.findAll(text=True)) for s in soup.findAll('p'))
+        page_tokens = tokenize(page_text)
+        for p in page_tokens:
+            if  p not in stop_words and p not in self.top_fifty_frequency_words:
+                self.top_fifty_frequency_words[p] = 1
+            elif p not in stop_words:
+                self.top_fifty_frequency_words[p] += 1
+        page_text_div = (''.join(s.findAll(text=True)) for s in soup.findAll('div'))
+        div_tokens = tokenize(page_text_div)
+        for d in div_tokens:
+            if  d not in stop_words and d not in self.top_fifty_frequency_words:
+                self.top_fifty_frequency_words[d] = 1
+            elif d not in stop_words:
+                self.top_fifty_frequency_words[d] += 1 
 
     def write_analytics(self):
         file = open('analytics.txt', 'w')
         file.write("analytics")
+        file.write("1: visited_subdomains")
+        # file.write()
+        file.write("2: page_with_the_most_valid_outlinks:")
+        # file.write()
+        file.write("3: downloaded_urls")
+        # file.write()
+        file.write("3: trap_urls")
+        # file.write()
+        file.write("4: longest_worded_page")
+        # file.write()
+        file.write("5: top_fifty_frequency_words")
+        # file.write()
         file.close()
         print('analytics written')
+
+    # ==================
  
     def start_crawling(self):
         """
@@ -83,14 +132,6 @@ class Crawler:
 
         Suggested library: lxml
         """
-        # outputLinks = []
-        # if not ( (url_data['content'] is None) or (url_data['size'] == 0) or (url_data['http_code'] in range(400,600)) or (url_data['content_type'] == 'application/pdf') or (url_data['content_type'] == 'application/zip') ):
-        #     # print(url_data['url'], ':', url_data['http_code'])
-        #     soup = BeautifulSoup(url_data['content'], "lxml")
-        #     for link in soup.findAll('a'):
-        #         outputLink = urljoin(url_data['url'], link.get('href'))
-        #         outputLinks.append(outputLink)
-        # return outputLinks
         outputLinks = []
         if not ( (url_data['content'] is None) or (url_data['size'] == 0) or (url_data['http_code'] in range(400,600)) or (url_data['content_type'] == 'application/pdf') or (url_data['content_type'] == 'application/zip') ):
             soup = BeautifulSoup(url_data['content'], "lxml")
@@ -114,10 +155,9 @@ class Crawler:
             return False
         try:
             # ============start trap detection===========
-            
-            # simplest checks
-            if ((len(url) > 100) or ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ): 
-                # record trap in 
+
+            # urls that are too long
+            if ( len(url) > 120 ):
                 return False
 
             # repeating patterns
@@ -126,13 +166,18 @@ class Crawler:
             if match:
                 return False
 
-            # # 
-            # if '?' in url or '=' in url or '&' in url:
-            #     # url_parse = urlparse(url)
-            #     query_args: dict = parse_qs(urlparse(url).query)
-            #     return False
-            if url.endswith('action=login') or url.endswith('precision=second'):
+            # various directory and query arguments filtered for multiple reasons, such as:
+            # pound sign indicating elements/positions all on the same page, =login not being accessible thru crawling, action=implying absent user interactivity, etc
+            if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
                 return False
+
+            # dynamic url's that have quite a few query arguments
+            if '?' in url or '=' in url or '&' in url:
+                if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
+                    return False
+                query_args: dict = parse_qs(urlparse(url).query)
+                # print(query_args)
+                return len(query_args) < 7
 
             return ".ics.uci.edu" in parsed.hostname \
                    and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
@@ -147,4 +192,21 @@ class Crawler:
             # print("TypeError for ", parsed)
             return False
 
-
+# ================
+# sources:
+# https://edstem.org/us/courses/33063/discussion/2500737
+# https://youtu.be/klJZw2aMEIQ?t=605
+# https://docs.python.org/3/library/urllib.parse.html
+# https://stackoverflow.com/questions/70717072/how-to-compare-urls-in-python-not-traditional-way
+# https://stackoverflow.com/questions/24396406/find-most-common-words-from-a-website-in-python-3
+# https://stackoverflow.com/questions/6925825/get-subdomain-from-url-using-python
+# https://stackoverflow.com/questions/10113090/best-way-to-parse-a-url-query-string
+# https://developers.google.com/search/blog/2008/09/dynamic-urls-vs-static-urls
+# https://datagy.io/python-list-alphabet/
+# https://www.w3schools.com/python/gloss_python_join_lists.asp
+# https://www.ranks.nl/stopwords
+# https://fleiner.com/bots/
+# https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#redirection_messages
+# https://www.geeksforgeeks.org/http-headers-content-type/
+# https://pypi.org/project/tldextract/

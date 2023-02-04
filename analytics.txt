@@ -1,1 +1,1 @@
-analytics
+analytics1: visited_subdomains
