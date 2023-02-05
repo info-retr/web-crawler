@@ -11,7 +11,7 @@ import json
 import heapq
 from collections import defaultdict
 
-from PartA import tokenize, tokenize_file
+from PartA import tokenize, tokenize_file, compute_word_frequencies
 
 logger = logging.getLogger(__name__)
 
@@ -30,27 +30,37 @@ class Crawler:
         self.valid_outlink_page_count = defaultdict(int)
         self.valid_urls: set = set()
         self.trap_urls: set = set()
-        # self.valid_urls: list = []
-        # self.trap_urls: list = []
-        self.page_word_counts: dict = {}
-        self.shared_word_count: dict = {}
+        self.page_word_counts = defaultdict(int)
         # a single url_data dict of the previous link visited
         self.url_data_buffer: dict = {}
 
         self.stop_words = tokenize_file('stop_words.txt')
         self.stop_words.extend(list(string.ascii_letters))
         self.stop_words = sorted(set(self.stop_words))
+        self.top_fifty_frequency_words = defaultdict(int)
 
-    def get_subdomain(self, url):
+    def get_subdomain(self, url): #1
         sub = tldextract.extract(url)
         if sub.subdomain in self.url_count_per_subdomain:
             self.url_count_per_subdomain[sub.subdomain] += 1
         else:
             self.url_count_per_subdomain[sub.subdomain] = 1
 
+
+    def mostCommonWords(self, soup): #5
+        words = tokenize(soup.get_text())
+        for word in words:
+            if word not in self.stop_words:
+                self.top_fifty_frequency_words[word] += 1
+
+
+    def findLongestPage(self, url, soup): #4
+        num_words = len(tokenize(soup.get_text()))
+        self.page_word_counts[url] += num_words
+        
+
     def write_analytics(self):
-        print("all this function should do is output data that already exists. the 2 methods take care of "
-              "on their own with start_crawling as a sort of glue/backbone")
+        print("writing analytics...")
         
         # with open('valid_urls.txt', 'w') as valid_file:
         #     for c in self.valid_urls:
@@ -61,20 +71,24 @@ class Crawler:
         #         trap_file.write(t)
 
         analytics_file = open('analytics.txt', 'w')
-        analytics_file.write("1: subdomains visited and number of urls processed\n\n")
+        analytics_file.write("(1) number of urls processed for all visited subdomains:\n\n")
         analytics_file.write("Open url_count_per_subdomain.txt\n")
 
-        analytics_file.write("\n2: page with most valid outlinks\n\n")
+        analytics_file.write("\n(2) page with most valid outlinks:\n\n")
         max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
-        analytics_file.write("{}: {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
+        analytics_file.write("{} has {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
 
-        analytics_file.write("\n3: see trapped URLs in attached trapped_urls.txt and valid URLs in attached valid_urls.txt\n\n")
+        analytics_file.write("\n(3) see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt\n\n")
 
-        analytics_file.write("\n4: longest page in terms of number of words\n\n")
-        #analytics_file.write(max(self.page_word_counts, key=self.page_word_counts.get))
+        analytics_file.write("\n(4) page with highest word count:\n\n")
+        longest_page = max(self.page_word_counts, key=self.page_word_counts.get)
+        analytics_file.write("{} has {} words\n".format(str(longest_page), str(self.page_word_counts[longest_page])))
 
-        analytics_file.write("\n5: top 50 most common words across all pages\n\n")
-        # file.write(json.dumps(heapq.nlargest(50, iterable)))
+        analytics_file.write("\n(5) top 50 common words across all pages\n\n")
+        sorted_top50 = sorted(self.top_fifty_frequency_words.items(), key=lambda x: x[1], reverse=True)[:50]
+        for i, s in enumerate(sorted_top50):
+            analytics_file.write('{}: {}\n'.format(str(i+1), str(s)))
+
         analytics_file.close()
         print('\nanalytics written')
 
@@ -125,6 +139,8 @@ class Crawler:
                 if self.is_valid(outputLink):
                     self.valid_urls.add(outputLink)
                     self.valid_outlink_page_count[outputLink] += 1
+                    #self.findLongestPage(soup=soup) #4
+                    self.mostCommonWords(soup=soup) #5    
                 else:
                     self.trap_urls.add(outputLink)
                         
@@ -158,10 +174,6 @@ class Crawler:
     #     page_contents = url_data['content']
     #     print(page_contents)
     #     return BeautifulSoup(page_contents, 'html.parser').get_text()
-
-    def append_page_word_count(self, url_data):
-        # print(BeautifulSoup(url_data['content'], 'html.parser').get_text())
-        self.page_word_counts[url_data['url']] = len(tokenize(BeautifulSoup(url_data['content'], 'html.parser').get_text()))
 
 # a word in any 1 file has to exist in all pages 
 # dict {word:str, frequency}

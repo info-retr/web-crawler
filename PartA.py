@@ -54,8 +54,9 @@ def compute_word_frequencies(tokens: list) -> dict:
             wordFreqs[token] = 0
         wordFreqs[token] += 1
     # printWordFreqs(wordFreqs)
-    wordFreqs = dict(sorted(wordFreqs.items()))
-    return dict(sorted(wordFreqs.items(), key=lambda item: item[1], reverse=True))
+    # wordFreqs = dict(sorted(wordFreqs.items()))
+    return wordFreqs
+    # dict(sorted(wordFreqs.items(), key=lambda item: item[1], reverse=True))
 
 
 # complexity: O(n) because no nested iterative loops
