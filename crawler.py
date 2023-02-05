@@ -78,7 +78,8 @@ class Crawler:
         max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
         analytics_file.write("{} has {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
 
-        analytics_file.write("\n(3) see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt\n\n")
+        analytics_file.write("\n(3) list of downloaded URLs and identified traps:\n\n")
+        analytics_file.write("see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt\n")
 
         analytics_file.write("\n(4) page with highest word count:\n\n")
         longest_page = max(self.page_word_counts, key=self.page_word_counts.get)
@@ -139,7 +140,7 @@ class Crawler:
                 if self.is_valid(outputLink):
                     self.valid_urls.add(outputLink)
                     self.valid_outlink_page_count[outputLink] += 1
-                    #self.findLongestPage(soup=soup) #4
+                    self.findLongestPage(outputLink, soup=soup) #4
                     self.mostCommonWords(soup=soup) #5    
                 else:
                     self.trap_urls.add(outputLink)
