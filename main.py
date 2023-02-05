@@ -30,3 +30,5 @@ if __name__ == "__main__":
     for k, v in crawler.url_count_per_subdomain.items():
         file.write("{}: {}\n".format(str(k), str(v)))
     file.close()
+
+    crawler.write_analytics()

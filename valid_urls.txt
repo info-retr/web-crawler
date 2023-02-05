@@ -6850,10 +6850,7 @@ http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.379.2861&rep=rep1&type=
 http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.61.7441&rep=rep1&type=pdf
 http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.909.7269&rep=rep1&type=pdf
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.124.8829
-http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.127.6956
-http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.21.8416
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.43.8372
-http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.47.3545
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.49.7546
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.53.8337
 http://claim-blog.freedombloghost.info/?p=9041
@@ -13220,7 +13217,6 @@ http://portal.acm.org/citation.cfm?id=1242572.1242598
 http://portal.acm.org/citation.cfm?id=1242572.1242660
 http://portal.acm.org/citation.cfm?id=1242600
 http://portal.acm.org/citation.cfm?id=1247069.1247085&coll=GUIDE&dl=GUIDE
-http://portal.acm.org/citation.cfm?id=1247602
 http://portal.acm.org/citation.cfm?id=1248852
 http://portal.acm.org/citation.cfm?id=1253532.1254721
 http://portal.acm.org/citation.cfm?id=127821
@@ -14820,7 +14816,6 @@ http://www.ics.uci.edu/%7Egts/words.html
 http://www.ics.uci.edu/%7Ehasuncio
 http://www.ics.uci.edu/%7Ehjafarpo/
 http://www.ics.uci.edu/%7Eicgse2016/
-http://www.ics.uci.edu/%7Eics214
 http://www.ics.uci.edu/%7Eiosif
 http://www.ics.uci.edu/%7Eirani/f04-h22/lab6/Comparable.java
 http://www.ics.uci.edu/%7Eirani/f04-h22/lab6/IllegalTimeValueException.java
@@ -15716,7 +15711,6 @@ http://www.ics.uci.edu/~avaladar
 http://www.ics.uci.edu/~avinask1
 http://www.ics.uci.edu/~avinask1/
 http://www.ics.uci.edu/~aviral
-http://www.ics.uci.edu/~aviral/
 http://www.ics.uci.edu/~aviral/papers/EnergyrISA04
 http://www.ics.uci.edu/~aviral/papers/adlJournal.html
 http://www.ics.uci.edu/~aviral/papers/autoOT.html
@@ -15822,7 +15816,6 @@ http://www.ics.uci.edu/~cs222
 http://www.ics.uci.edu/~cs222/
 http://www.ics.uci.edu/~cs223/
 http://www.ics.uci.edu/~cs224
-http://www.ics.uci.edu/~cs224/handouts
 http://www.ics.uci.edu/~cs230/
 http://www.ics.uci.edu/~cs237
 http://www.ics.uci.edu/~csp/r126.pdf:
@@ -19107,7 +19100,6 @@ http://www.ics.uci.edu/~okuchaie/
 http://www.ics.uci.edu/~pablo/
 http://www.ics.uci.edu/~pajarola/
 http://www.ics.uci.edu/~partha
-http://www.ics.uci.edu/~partha/
 http://www.ics.uci.edu/~pattis
 http://www.ics.uci.edu/~pattis/
 http://www.ics.uci.edu/~pattis/ICS-21
@@ -24534,7 +24526,6 @@ https://duttgroup.ics.uci.edu/blog/
 https://duttgroup.ics.uci.edu/blog/page/2/
 https://duttgroup.ics.uci.edu/category/news/
 https://duttgroup.ics.uci.edu/category/slider/
-https://duttgroup.ics.uci.edu/doku.php/group
 https://duttgroup.ics.uci.edu/doku.php/projects
 https://duttgroup.ics.uci.edu/group-members/
 https://duttgroup.ics.uci.edu/group-members/ajan-drg-headshot/
@@ -29836,7 +29827,6 @@ https://sli.ics.uci.edu/svn/puzzle
 https://softarch.usc.edu/wiki/doku.php?id=arcade:start
 https://softarch.usc.edu/wiki/doku.php?id=mfa:start
 https://softarch.usc.edu/wiki/doku.php?id=recoveries:start
-https://spreadsheets.google.com/ccc?key=0AlX1DUY458rodFhNdlI1Wm9QQmk0T01ZTUNsWVpXQUE&hl=en&authkey=CILwiJUG
 https://ssrn.com/abstract=3239632
 https://store.google.com/orderhistory?hl=en-US
 https://store.google.com/product/pixel_3_setup?hl=en
@@ -37740,8 +37730,6 @@ https://www.ics.uci.edu/~claram/
 https://www.ics.uci.edu/~claram/index.html
 https://www.ics.uci.edu/~claram/projects.html
 https://www.ics.uci.edu/~claram/publications.html
-https://www.ics.uci.edu/~cs224/
-https://www.ics.uci.edu/~cs224/projects/projects.html
 https://www.ics.uci.edu/~dan
 https://www.ics.uci.edu/~dan/
 https://www.ics.uci.edu/~dan/bridge/slam.txt
@@ -41806,6 +41794,8 @@ https://www.ics.uci.edu/~eppstein/junkyard/wordprob.html
 https://www.ics.uci.edu/~eppstein/junkyard/zono.html
 https://www.ics.uci.edu/~eppstein/kookies7@yahoo.com
 https://www.ics.uci.edu/~eppstein/m2html/
+https://www.ics.uci.edu/~eppstein/m2html/\""
+https://www.ics.uci.edu/~eppstein/m2html/\"mailto:"
 https://www.ics.uci.edu/~eppstein/m2html/lineb.c
 https://www.ics.uci.edu/~eppstein/m2html/lineb.h
 https://www.ics.uci.edu/~eppstein/m2html/m2html.c

@@ -27,7 +27,7 @@ class Crawler:
     # subdomains that it visited, how many different URLs it has
 # processed from each of those subdomains.
         self.url_count_per_subdomain = defaultdict(int)
-        self.valid_outlink_page_count: dict = {}
+        self.valid_outlink_page_count = defaultdict(int)
         self.valid_urls: set = set()
         self.trap_urls: set = set()
         # self.valid_urls: list = []
@@ -52,31 +52,31 @@ class Crawler:
         print("all this function should do is output data that already exists. the 2 methods take care of "
               "on their own with start_crawling as a sort of glue/backbone")
         
-        with open('valid_urls.txt', 'w') as valid_file:
-            for c in self.valid_urls:
-                valid_file.write(c)
+        # with open('valid_urls.txt', 'w') as valid_file:
+        #     for c in self.valid_urls:
+        #         valid_file.write(c)
 
-        with open('trapped_urls.txt', 'w') as trap_file:
-            for t in self.trap_urls:
-                trap_file.write(t)
+        # with open('trapped_urls.txt', 'w') as trap_file:
+        #     for t in self.trap_urls:
+        #         trap_file.write(t)
 
         analytics_file = open('analytics.txt', 'w')
-        analytics_file.write("1: subdomains visited and number of urls processed")
-        analytics_file.write(json.dumps(self.url_count_per_subdomain))
+        analytics_file.write("1: subdomains visited and number of urls processed\n\n")
+        analytics_file.write("Open url_count_per_subdomain.txt\n")
 
-        analytics_file.write("2: page with most valid outlinks")
-        analytics_file.write(max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get))
+        analytics_file.write("\n2: page with most valid outlinks\n\n")
+        max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
+        analytics_file.write("{}: {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
 
-        analytics_file.write("3: see trapped URLs in attached trapped_urls.txt, \
-            and see valid URLs in attached valid_urls.txt ")
+        analytics_file.write("\n3: see trapped URLs in attached trapped_urls.txt and valid URLs in attached valid_urls.txt\n\n")
 
-        analytics_file.write("4: longest page in terms of number of words")
-        analytics_file.write(max(self.page_word_counts, key=self.page_word_counts.get))
+        analytics_file.write("\n4: longest page in terms of number of words\n\n")
+        #analytics_file.write(max(self.page_word_counts, key=self.page_word_counts.get))
 
-        analytics_file.write("5: top 50 most common words across all pages")
+        analytics_file.write("\n5: top 50 most common words across all pages\n\n")
         # file.write(json.dumps(heapq.nlargest(50, iterable)))
         analytics_file.close()
-        print('analytics written')
+        print('\nanalytics written')
 
     def start_crawling(self):
         """
@@ -122,11 +122,11 @@ class Crawler:
                     outputLink = urljoin(url_data['final_url'], link.get('href'))
                 else:
                     outputLink = urljoin(url_data['url'], link.get('href'))
-                    if self.is_valid(outputLink):
-                        self.valid_urls.add(outputLink)
-
-                    else:
-                        self.trap_urls.add(outputLink)
+                if self.is_valid(outputLink):
+                    self.valid_urls.add(outputLink)
+                    self.valid_outlink_page_count[outputLink] += 1
+                else:
+                    self.trap_urls.add(outputLink)
                         
                 self.get_subdomain(outputLink)
                 outputLinks.add(outputLink)
