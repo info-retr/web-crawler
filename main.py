@@ -26,9 +26,4 @@ if __name__ == "__main__":
     crawler = Crawler(frontier, corpus)
     crawler.start_crawling()
 
-    # file = open('url_count_per_subdomain.txt', 'w')
-    # for k, v in crawler.url_count_per_subdomain.items():
-    #     file.write("{}: {}\n".format(str(k), str(v)))
-    # file.close()
-    #
-    # crawler.write_analytics()
+    crawler.write_analytics()

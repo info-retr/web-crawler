@@ -42,43 +42,62 @@ class Crawler:
         self.stop_words = tokenize_file('stop_words.txt')
         self.stop_words.extend(list(string.ascii_letters))
         self.stop_words = sorted(set(self.stop_words))
+        self.top_fifty_frequency_words = defaultdict(int)
 
-    def get_subdomain(self, url):
+    def get_subdomain(self, url):  # 1
         sub = tldextract.extract(url)
         if sub.subdomain in self.url_count_per_subdomain:
             self.url_count_per_subdomain[sub.subdomain] += 1
         else:
             self.url_count_per_subdomain[sub.subdomain] = 1
 
+    def mostCommonWords(self, soup):  # 5
+        words = tokenize(soup.get_text())
+        for word in words:
+            if word not in self.stop_words:
+                self.top_fifty_frequency_words[word] += 1
+
+    def findLongestPage(self, url, soup):  # 4
+        num_words = len(tokenize(soup.get_text()))
+        self.page_word_counts[url] += num_words
+
     def write_analytics(self):
-        print("all this function should do is output data that already exists. the 2 methods take care of "
-              "on their own with start_crawling as a sort of glue/backbone")
+        print("writing analytics...")
+        self.valid_urls = sorted(self.valid_urls)
+        self.trap_urls = sorted(self.trap_urls)
+        with open('valid_urls.txt', 'w') as valid_file:
+            for c in self.valid_urls:
+                valid_file.write("{}\n".format(c))
+        with open('trapped_urls.txt', 'w') as trap_file:
+            for t in self.trap_urls:
+                trap_file.write("{}\n".format(t))
 
-        # with open('valid_urls.txt', 'w') as valid_file:
-        #     for c in self.valid_urls:
-        #         valid_file.write(c)
-
-        # with open('trapped_urls.txt', 'w') as trap_file:
-        #     for t in self.trap_urls:
-        #         trap_file.write(t)
+        file = open('url_count_per_subdomain.txt', 'w')
+        for k, v in self.url_count_per_subdomain.items():
+            file.write("{}: {}\n".format(str(k), str(v)))
+        file.close()
 
         analytics_file = open('analytics.txt', 'w')
-        analytics_file.write("1: subdomains visited and number of urls processed\n\n")
+        analytics_file.write("(1) number of urls processed for all visited subdomains:\n\n")
         analytics_file.write("Open url_count_per_subdomain.txt\n")
 
-        analytics_file.write("\n2: page with most valid outlinks\n\n")
+        analytics_file.write("\n(2) page with most valid outlinks:\n\n")
         max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
         analytics_file.write(
-            "{}: {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
+            "{} has {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
 
-        analytics_file.write(
-            "\n3: see trapped URLs in attached trapped_urls.txt and valid URLs in attached valid_urls.txt\n\n")
+        analytics_file.write("\n(3) list of downloaded URLs and identified traps:\n\n")
+        analytics_file.write("see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt\n")
 
-        analytics_file.write("\n4: longest page in terms of number of words\n\n")
-        # analytics_file.write(max(self.page_word_counts, key=self.page_word_counts.get))
+        analytics_file.write("\n(4) page with highest word count:\n\n")
+        longest_page = max(self.page_word_counts, key=self.page_word_counts.get)
+        analytics_file.write("{} has {} words\n".format(str(longest_page), str(self.page_word_counts[longest_page])))
 
-        analytics_file.write("\n5: top 50 most common words across all pages\n\n")
-        # file.write(json.dumps(heapq.nlargest(50, iterable)))
+        analytics_file.write("\n(5) top 50 common words across all pages\n\n")
+        sorted_top50 = sorted(self.top_fifty_frequency_words.items(), key=lambda x: x[1], reverse=True)[:50]
+        for i, s in enumerate(sorted_top50):
+            analytics_file.write('{}: {}\n'.format(str(i + 1), str(s)))
+
         analytics_file.close()
         print('\nanalytics written')
 
@@ -97,15 +116,6 @@ class Crawler:
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
-
-        self.valid_urls = sorted(self.valid_urls)
-        self.trap_urls = sorted(self.trap_urls)
-        with open('valid_urls.txt', 'w') as valid_file:
-            for c in self.valid_urls:
-                valid_file.write("{}\n".format(c))
-        with open('trapped_urls.txt', 'w') as trap_file:
-            for t in self.trap_urls:
-                trap_file.write("{}\n".format(t))
 
     def extract_next_links(self, url_data) -> list:
         """

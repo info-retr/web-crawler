@@ -1,6 +1,6 @@
-1: subdomains visited and number of urls processed
+(1) number of urls processed for all visited subdomains:
 
 Open url_count_per_subdomain.txt
 
-2: page with most valid outlinks
+(2) page with most valid outlinks:
 
