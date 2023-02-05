@@ -4,13 +4,3 @@ Open url_count_per_subdomain.txt
 
 2: page with most valid outlinks
 
-https://ngs.ics.uci.edu/: 7943 valid outlinks
-
-3: see trapped URLs in attached trapped_urls.txt and valid URLs in attached valid_urls.txt
-
-
-4: longest page in terms of number of words
-
-
-5: top 50 most common words across all pages
-

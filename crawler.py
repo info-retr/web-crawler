@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 import tldextract
 import string
 
+import os
 import uu
 import json
 import heapq
@@ -14,6 +15,7 @@ from collections import defaultdict
 from PartA import tokenize, tokenize_file
 
 logger = logging.getLogger(__name__)
+
 
 class Crawler:
     """
@@ -24,14 +26,14 @@ class Crawler:
     def __init__(self, frontier, corpus):
         self.frontier = frontier
         self.corpus = corpus
-    # subdomains that it visited, how many different URLs it has
-# processed from each of those subdomains.
+        # subdomains that it visited, how many different URLs it has
+        # processed from each of those subdomains.
         self.url_count_per_subdomain = defaultdict(int)
         self.valid_outlink_page_count = defaultdict(int)
-        self.valid_urls: set = set()
+        # self.valid_urls: set = set()
+        # self.trap_urls: set = set()
+        self.valid_urls: list = list()
         self.trap_urls: set = set()
-        # self.valid_urls: list = []
-        # self.trap_urls: list = []
         self.page_word_counts: dict = {}
         self.shared_word_count: dict = {}
         # a single url_data dict of the previous link visited
@@ -51,7 +53,7 @@ class Crawler:
     def write_analytics(self):
         print("all this function should do is output data that already exists. the 2 methods take care of "
               "on their own with start_crawling as a sort of glue/backbone")
-        
+
         # with open('valid_urls.txt', 'w') as valid_file:
         #     for c in self.valid_urls:
         #         valid_file.write(c)
@@ -66,12 +68,14 @@ class Crawler:
 
         analytics_file.write("\n2: page with most valid outlinks\n\n")
         max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
-        analytics_file.write("{}: {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
+        analytics_file.write(
+            "{}: {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
 
-        analytics_file.write("\n3: see trapped URLs in attached trapped_urls.txt and valid URLs in attached valid_urls.txt\n\n")
+        analytics_file.write(
+            "\n3: see trapped URLs in attached trapped_urls.txt and valid URLs in attached valid_urls.txt\n\n")
 
         analytics_file.write("\n4: longest page in terms of number of words\n\n")
-        #analytics_file.write(max(self.page_word_counts, key=self.page_word_counts.get))
+        # analytics_file.write(max(self.page_word_counts, key=self.page_word_counts.get))
 
         analytics_file.write("\n5: top 50 most common words across all pages\n\n")
         # file.write(json.dumps(heapq.nlargest(50, iterable)))
@@ -88,7 +92,8 @@ class Crawler:
             # logger.info("Fetching URL %s ... Fetched: %s, Queue size: %s", url, self.frontier.fetched, len(self.frontier))
             url_data = self.corpus.fetch_url(url)
 
-            for next_link in self.extract_next_links(url_data):
+            holder: list = self.extract_next_links(url_data)
+            for next_link in holder:
                 if self.is_valid(next_link):
                     if self.corpus.get_file_name(next_link) is not None:
                         self.frontier.add_url(next_link)
@@ -102,7 +107,7 @@ class Crawler:
             for t in self.trap_urls:
                 trap_file.write("{}\n".format(t))
 
-    def extract_next_links(self, url_data) -> set:
+    def extract_next_links(self, url_data) -> list:
         """
         The url_data coming from the fetch_url method will be given as a parameter to this method. url_data contains the
         fetched url, the url content in binary format, and the size of the content in bytes. This method should return a
@@ -112,10 +117,10 @@ class Crawler:
 
         Suggested library: lxml
         """
-        outputLinks = set()
-        if not ((url_data['content'] is None) or (url_data['size'] == 0) or (
-                url_data['http_code'] in range(400, 600)) or (url_data['content_type'] == 'application/pdf') or (
-                        url_data['content_type'] == 'application/zip')):
+        outputLinks = list()
+        url = url_data['url']
+        if not ((url_data['content'] is None) or (url_data['size'] == 0) or (url_data['http_code'] in range(400, 600)) ):
+                # or (not url_data['is_redirected'] and url == url_data['final_url']) ):
             soup = BeautifulSoup(url_data['content'], "lxml")
             for link in soup.findAll('a'):
                 if url_data['is_redirected']:
@@ -123,13 +128,10 @@ class Crawler:
                 else:
                     outputLink = urljoin(url_data['url'], link.get('href'))
                 if self.is_valid(outputLink):
-                    self.valid_urls.add(outputLink)
-                    self.valid_outlink_page_count[outputLink] += 1
-                else:
-                    self.trap_urls.add(outputLink)
-                        
-                self.get_subdomain(outputLink)
-                outputLinks.add(outputLink)
+                    outputLinks.append(outputLink)
+            if self.is_valid(url):
+                self.valid_urls.append(url)
+
         # analyti-cizing 1,2,4,5
         # if self.url_data_buffer == {}:
         #     self.url_data_buffer = url_data
@@ -161,24 +163,25 @@ class Crawler:
 
     def append_page_word_count(self, url_data):
         # print(BeautifulSoup(url_data['content'], 'html.parser').get_text())
-        self.page_word_counts[url_data['url']] = len(tokenize(BeautifulSoup(url_data['content'], 'html.parser').get_text()))
+        self.page_word_counts[url_data['url']] = len(
+            tokenize(BeautifulSoup(url_data['content'], 'html.parser').get_text()))
 
-# a word in any 1 file has to exist in all pages 
-# dict {word:str, frequency}
-# but we need another dstruct
-# first, find a set intersection between page1 and page2
-# strip away set elements that are also in stopwords
-# shared words have to exist in both of them
-# then find set intersection between set(p1,p2) and page3
-#     def append_shared_word_count(url_data):
-#         first_word_set: set = set(tokenize(url_content_to_page_text(url_data)))
-#         second_word_set: set = set(tokenize(url_content_to_page_text(url_data)))
-#         common = len(second_word_set.intersection(first_word_set))
-#         self.shared_word_count[url_data['url']] =
-#                     # res = any(ele in test_string for ele in test_list)
-#             # stop words
-#             if any(word in )
-#         self.url_data_buffer
+    # a word in any 1 file has to exist in all pages
+    # dict {word:str, frequency}
+    # but we need another dstruct
+    # first, find a set intersection between page1 and page2
+    # strip away set elements that are also in stopwords
+    # shared words have to exist in both of them
+    # then find set intersection between set(p1,p2) and page3
+    #     def append_shared_word_count(url_data):
+    #         first_word_set: set = set(tokenize(url_content_to_page_text(url_data)))
+    #         second_word_set: set = set(tokenize(url_content_to_page_text(url_data)))
+    #         common = len(second_word_set.intersection(first_word_set))
+    #         self.shared_word_count[url_data['url']] =
+    #                     # res = any(ele in test_string for ele in test_list)
+    #             # stop words
+    #             if any(word in )
+    #         self.url_data_buffer
     def is_valid(self, url):
         """
         Function returns True or False based on whether the url has to be fetched or not. This is a great place to
@@ -187,39 +190,58 @@ class Crawler:
         """
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
+            self.trap_urls.add(url)
             return False
         try:
-            # urls that are too long
-            if ( len(url) > 120 ):
+            # urls that are too long (120 bc easier to debug w/ sublime's 120 column marker)
+            if len(url) > 120:
+                self.trap_urls.add(url)
                 return False
 
             # repeating patterns
-            pattern = re.compile(r"(.)(/{2,})(.*)") #repeating patterns
+            pattern = re.compile(r"(.)(/{2,})(.*)")  # repeating patterns
             match = pattern.search(parsed.path)
             if match:
+                self.trap_urls.add(url)
                 return False
 
             # various directory and query arguments filtered for multiple reasons, such as:
             # pound sign indicating elements/positions all on the same page
-            if ( ('#' in url) or ('/pix/' in url) or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
+            if '#' in url:
+                self.trap_urls.add(url)
+                return False
+
+            if ( ('/pix/' in url) ): # or ('/cite/' in url) or ('/cites/' in url) or ('/rules/' in url) ):
+                self.trap_urls.add(url)
                 return False
 
             # dynamic url's that have quite a few query arguments, =login not being accessible thru crawling, action=implying absent user interactivity, etc
             if '?' in url or '=' in url or '&' in url:
-                if ( ('=login' in url) or ('precision=second' in url) or ('=diff' in url) or ('version=' in url) or ('action=' in url) ): #or ('do=' in url)):
+                if (('=login' in url) or ('action=' in url)):  # or ('do=' in url)):
+                    self.trap_urls.add(url)
                     return False
                 query_args: dict = parse_qs(urlparse(url).query)
-                return len(query_args) < 6
+                if len(query_args) < 5:
+                    self.trap_urls.add(url)
+                    return False
 
-            return ".ics.uci.edu" in parsed.hostname \
-                   and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
-                                    + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
-                                    + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
-                                    + "|thmx|mso|arff|rtf|jar|csv" \
-                                    + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf" \
-                                    + "|bam|lif|ply|mexw|bw)$", parsed.path.lower())
+            if str(parsed.hostname).split('.')[-3:] != ['ics', 'uci', 'edu']:
+                self.trap_urls.add(url)
+                return False
+            file_ext = os.path.splitext(urlparse(url).path)[1]
+            if not (file_ext == '.html' or file_ext == '.htm' or file_ext == '.txt' or file_ext == ''):
+                # if (not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4" \
+                #                         + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
+                #                         + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
+                #                         + "|thmx|mso|arff|rtf|jar|csv" \
+                #                         + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf" \
+                #                         + "|bam|ply|mexw|bw|motif|pickle)$", parsed.path.lower())):
+                self.trap_urls.add(url)
+                return False
+            else:
+                return True
         except TypeError:
-            # print("TypeError for ", parsed)
+            print("TypeError for ", parsed)
             return False
 
 # ================
@@ -246,3 +268,5 @@ class Crawler:
 # https://stackoverflow.com/questions/1692388/python-list-of-dict-if-exists-increment-a-dict-value-if-not-append-a-new-dic
 # https://www.w3schools.com/python/ref_set_update.asp
 # https://www.programiz.com/python-programming/methods/dictionary/copy
+# https://www.youtube.com/watch?v=ng2o98k983k
+# https://stackoverflow.com/questions/4776924/how-to-safely-get-the-file-extension-from-a-url

@@ -88,5 +88,8 @@ class Corpus:
                 "is_redirected": data_dict[b'is_redirected'][b'value'] if b'is_redirected' in data_dict and b'value' in data_dict[b'is_redirected'] else False,
                 "final_url": data_dict[b'final_url'][b'value'] if b'final_url' in data_dict and b'value' in data_dict[b'final_url'] else None
             }
-
+        # if 'fano' in url:
+        #     print(file_name.split('/')[-1])
+        # print(file_name,'==',url)
+        # print(url_data)
         return url_data
