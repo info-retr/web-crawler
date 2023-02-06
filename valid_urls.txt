@@ -17321,7 +17321,6 @@ http://www.ics.uci.edu/~asuncion/index2.htm
 http://www.ics.uci.edu/~avinask1
 http://www.ics.uci.edu/~avinask1/
 http://www.ics.uci.edu/~aviral
-http://www.ics.uci.edu/~aviral/
 http://www.ics.uci.edu/~aviral/papers/adlJournal.html
 http://www.ics.uci.edu/~aviral/papers/autoOT.html
 http://www.ics.uci.edu/~aviral/papers/customizableCompiler.html
@@ -33876,7 +33875,6 @@ https://www.ics.uci.edu/~claram/
 https://www.ics.uci.edu/~claram/index.html
 https://www.ics.uci.edu/~claram/projects.html
 https://www.ics.uci.edu/~claram/publications.html
-https://www.ics.uci.edu/~cs224/
 https://www.ics.uci.edu/~dan
 https://www.ics.uci.edu/~dan/
 https://www.ics.uci.edu/~dan/class/161/gradePolicies.html

@@ -36,74 +36,24 @@ class Crawler:
         self.stop_words = sorted(set(self.stop_words))
         self.top_fifty_frequency_words = defaultdict(int)
 
-<<<<<<< HEAD
-    def get_subdomain(self, url): #1
-=======
         self.common_web_file_exts: list = [
             "html", "htm", "css",'rss',"js","jsx","less","scss","wasm",
             "php",'shtml','xhtml','asp','asx'
           ]
 
     def get_subdomain(self, url):  # 1
->>>>>>> 475b0991a125593b8142a2e4bd076d38093d4e65
         sub = tldextract.extract(url)
         if sub.subdomain in self.url_count_per_subdomain:
             self.url_count_per_subdomain[sub.subdomain] += 1
         else:
             self.url_count_per_subdomain[sub.subdomain] = 1
 
-<<<<<<< HEAD
-
-    def mostCommonWords(self, soup): #5
-=======
     def mostCommonWords(self, soup):  # 5
->>>>>>> 475b0991a125593b8142a2e4bd076d38093d4e65
         words = tokenize(soup.get_text())
         for word in words:
-            if word not in self.stop_words:
-                self.top_fifty_frequency_words[word] += 1
-<<<<<<< HEAD
-
-
-    def findLongestPage(self, url, soup): #4
-        num_words = len(tokenize(soup.get_text()))
-        self.page_word_counts[url] += num_words
-        
-
-    def write_analytics(self):
-        print("writing analytics...")
-        
-        # with open('valid_urls.txt', 'w') as valid_file:
-        #     for c in self.valid_urls:
-        #         valid_file.write(c)
-
-        # with open('trapped_urls.txt', 'w') as trap_file:
-        #     for t in self.trap_urls:
-        #         trap_file.write(t)
-
-        analytics_file = open('analytics.txt', 'w')
-        analytics_file.write("(1) number of urls processed for all visited subdomains:\n\n")
-        analytics_file.write("Open url_count_per_subdomain.txt\n")
-
-        analytics_file.write("\n(2) page with most valid outlinks:\n\n")
-        max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
-        analytics_file.write("{} has {} valid outlinks\n".format(str(max_links), str(self.valid_outlink_page_count[max_links])))
-
-        analytics_file.write("\n(3) list of downloaded URLs and identified traps:\n\n")
-        analytics_file.write("see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt\n")
-
-        analytics_file.write("\n(4) page with highest word count:\n\n")
-        longest_page = max(self.page_word_counts, key=self.page_word_counts.get)
-        analytics_file.write("{} has {} words\n".format(str(longest_page), str(self.page_word_counts[longest_page])))
-
-        analytics_file.write("\n(5) top 50 common words across all pages\n\n")
-        sorted_top50 = sorted(self.top_fifty_frequency_words.items(), key=lambda x: x[1], reverse=True)[:50]
-        for i, s in enumerate(sorted_top50):
-            analytics_file.write('{}: {}\n'.format(str(i+1), str(s)))
-
-        analytics_file.close()
-        print('\nanalytics written')
-=======
+            if str(word).isalpha():
+                if str(word).lower() not in self.stop_words:
+                    self.top_fifty_frequency_words[word] += 1
 
     def findLongestPage(self, url, soup):  # 4
         num_words = len(tokenize(soup.get_text()))
@@ -152,7 +102,6 @@ class Crawler:
             print('\nanalytics written')
         except ValueError:
             print('possibly empty corpus')
->>>>>>> 475b0991a125593b8142a2e4bd076d38093d4e65
 
     def start_crawling(self):
         """
@@ -192,62 +141,6 @@ class Crawler:
                 else:
                     outputLink = urljoin(url_data['url'], link.get('href'))
                 if self.is_valid(outputLink):
-<<<<<<< HEAD
-                    self.valid_urls.add(outputLink)
-                    self.valid_outlink_page_count[outputLink] += 1
-                    self.findLongestPage(outputLink, soup=soup) #4
-                    self.mostCommonWords(soup=soup) #5    
-                else:
-                    self.trap_urls.add(outputLink)
-                        
-                self.get_subdomain(outputLink)
-                outputLinks.add(outputLink)
-        # analyti-cizing 1,2,4,5
-        # if self.url_data_buffer == {}:
-        #     self.url_data_buffer = url_data
-        # else:
-        #     # 1
-        #     # self.url_count_per_subdomain[tldextract.extract(outputLink).subdomain] += 1
-        #     # 2
-        #     counter = 0
-        #     for outlink in outputLinks:
-        #         if self.is_valid(outlink):
-        #             counter += 1
-        #     # self.valid_outlink_page_count[outputLink] = counter
-        #     # 4
-        #     self.append_page_word_count(url_data)
-        #     # 5
-        #     # self.append_shared_word_count(url_data)
-        #
-        #     self.url_data_buffer = url_data.copy()
-        return outputLinks
-
-    # def url_content_to_page_text(self, url_data) -> str:
-    #     # page_contents = binascii.b2a_uu(url_data['content'])
-    #     # page_contents = url_data['content'].decode("utf-8")
-    #     # page_contents = str(url_data['content'], 'utf-8')
-    #     # >> > str(my_byte_str, 'utf-8')
-    #     page_contents = url_data['content']
-    #     print(page_contents)
-    #     return BeautifulSoup(page_contents, 'html.parser').get_text()
-
-# a word in any 1 file has to exist in all pages 
-# dict {word:str, frequency}
-# but we need another dstruct
-# first, find a set intersection between page1 and page2
-# strip away set elements that are also in stopwords
-# shared words have to exist in both of them
-# then find set intersection between set(p1,p2) and page3
-#     def append_shared_word_count(url_data):
-#         first_word_set: set = set(tokenize(url_content_to_page_text(url_data)))
-#         second_word_set: set = set(tokenize(url_content_to_page_text(url_data)))
-#         common = len(second_word_set.intersection(first_word_set))
-#         self.shared_word_count[url_data['url']] =
-#                     # res = any(ele in test_string for ele in test_list)
-#             # stop words
-#             if any(word in )
-#         self.url_data_buffer
-=======
                     outputLinks.append(outputLink)
                     self.valid_outlink_page_count[url] += 1
             if self.is_valid(url):
@@ -257,7 +150,6 @@ class Crawler:
                 self.get_subdomain(url)
         return outputLinks
 
->>>>>>> 475b0991a125593b8142a2e4bd076d38093d4e65
     def is_valid(self, url):
         """
         Function returns True or False based on whether the url has to be fetched or not. This is a great place to
