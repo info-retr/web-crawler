@@ -4,13 +4,21 @@ Open url_count_per_subdomain.txt
 
 (2) page with most valid outlinks:
 
+<<<<<<< HEAD
 https://ngs.ics.uci.edu/ has 7943 valid outlinks
 
 (3) see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt
+=======
+https://fano.ics.uci.edu/cites/Publication/ has 2404 valid outlinks
 
+(3) list of downloaded URLs and identified traps:
+>>>>>>> 475b0991a125593b8142a2e4bd076d38093d4e65
+
+see trapped URLs in trapped_urls.txt and valid URLs in valid_urls.txt
 
 (4) page with highest word count:
 
+<<<<<<< HEAD
 http://sli.ics.uci.edu/pmwiki/pmwiki.php?n=AIStats%2FPostings has 84884340 words
 
 (5) top 50 common words across all pages
@@ -65,3 +73,59 @@ http://sli.ics.uci.edu/pmwiki/pmwiki.php?n=AIStats%2FPostings has 84884340 words
 48: ('Much', 1386904)
 49: ('UCI', 1377370)
 50: ('married', 1359287)
+=======
+http://kdd.ics.uci.edu/databases/movies/data/actors.html has 82090 words
+
+(5) top 50 common words across all pages
+
+1: ('1', 77611)
+2: ('2', 63845)
+3: ('The', 54748)
+4: ('Computer', 50367)
+5: ('married', 47522)
+6: ('3', 44183)
+7: ('Eppstein', 40553)
+8: ('4', 39763)
+9: ('Information', 39499)
+10: ('will', 38109)
+11: ('School', 37489)
+12: ('Science', 37012)
+13: ('Irvine', 35729)
+14: ('Web', 33199)
+15: ('0', 32899)
+16: ('edu', 30800)
+17: ('5', 30495)
+18: ('10', 28845)
+19: ('This', 27704)
+20: ('UC', 27131)
+21: ('6', 26938)
+22: ('one', 26010)
+23: ('Jan', 25692)
+24: ('uci', 25560)
+25: ('ICS', 25420)
+26: ('May', 25049)
+27: ('Glider', 23950)
+28: ('Dec', 23585)
+29: ('8', 23374)
+30: ('Mar', 22861)
+31: ('Oct', 22786)
+32: ('7', 22644)
+33: ('Feb', 22148)
+34: ('Jun', 22068)
+35: ('5x', 21251)
+36: ('Apr', 21142)
+37: ('NY', 21073)
+38: ('Nov', 21072)
+39: ('4x', 21055)
+40: ('Server', 21037)
+41: ('Experimental', 20973)
+42: ('Aug', 20830)
+43: ('ics', 20819)
+44: ('Fano', 20676)
+45: ('Sep', 20467)
+46: ('4o', 20426)
+47: ('Bren', 19901)
+48: ('Jul', 19431)
+49: ('5o', 19304)
+50: ('12', 19195)
+>>>>>>> 475b0991a125593b8142a2e4bd076d38093d4e65
