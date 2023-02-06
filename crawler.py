@@ -69,16 +69,12 @@ class Crawler:
                     valid_file.write("{}\n".format(c))
             with open('trapped_urls.txt', 'w') as trap_file:
                 for t in self.trap_urls:
-                    trap_file.write("{}\n".format(t))
-
-            file = open('url_count_per_subdomain.txt', 'w')
-            for k, v in self.url_count_per_subdomain.items():
-                file.write("{}: {}\n".format(str(k), str(v)))
-            file.close()
+                    trap_file.write("{}\n".format(t))            
 
             analytics_file = open('analytics.txt', 'w')
             analytics_file.write("(1) number of urls processed for all visited subdomains:\n\n")
-            analytics_file.write("Open url_count_per_subdomain.txt\n")
+            for k, v in self.url_count_per_subdomain.items():
+                analytics_file.write("{}: {}\n".format(str(k), str(v)))
 
             analytics_file.write("\n(2) page with most valid outlinks:\n\n")
             max_links = max(self.valid_outlink_page_count, key=self.valid_outlink_page_count.get)
